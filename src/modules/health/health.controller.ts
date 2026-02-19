@@ -24,11 +24,10 @@ export class HealthController {
   @ApiOperation({ summary: 'Check overall application health' })
   @ApiResponse({ status: 200, type: HealthResponseDto })
   async check() {
-    const result = await this.health.check([
+    return this.health.check([
       () => this.prismaHealth.pingCheck('database', this.prisma),
       () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
     ]);
-    return this.simplify(result);
   }
 
   @Get('liveness')
@@ -36,10 +35,9 @@ export class HealthController {
   @ApiOperation({ summary: 'Check application liveness' })
   @ApiResponse({ status: 200, type: HealthResponseDto })
   async checkLiveness() {
-    const result = await this.health.check([
+    return this.health.check([
       () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
     ]);
-    return this.simplify(result);
   }
 
   @Get('readiness')
@@ -47,19 +45,8 @@ export class HealthController {
   @ApiOperation({ summary: 'Check application readiness' })
   @ApiResponse({ status: 200, type: HealthResponseDto })
   async checkReadiness() {
-    const result = await this.health.check([
+    return this.health.check([
       () => this.prismaHealth.pingCheck('database', this.prisma),
     ]);
-    return this.simplify(result);
-  }
-
-  private simplify(result: any) {
-    return {
-      status: result.status,
-      details: Object.keys(result.info).reduce((acc, key) => {
-        acc[key] = result.info[key].status;
-        return acc;
-      }, {}),
-    };
   }
 }

@@ -19,9 +19,20 @@ export class HealthResponseDto {
 
   @ApiProperty({
     example: {
-      database: 'up',
-      memory_heap: 'up',
+      database: { status: 'up' },
     },
   })
-  details: Record<string, string>;
+  info: Record<string, { status: string }>;
+
+  @ApiProperty({
+    example: {},
+  })
+  error: Record<string, unknown>;
+
+  @ApiProperty({
+    example: {
+      database: { status: 'up' },
+    },
+  })
+  details: Record<string, { status: string }>;
 }

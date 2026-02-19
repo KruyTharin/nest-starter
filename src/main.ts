@@ -44,6 +44,7 @@ async function bootstrap() {
 
   await app.listen(port);
 
+  logger.log(`Port running on: ${port}`);
   logger.log(`🚀 Application is running on: ${baseUrl}/api/${appVersion}`);
   logger.log(`🏥 Health Check: ${baseUrl}/health`);
   logger.log(`📚 Swagger UI: ${baseUrl}/docs`);
