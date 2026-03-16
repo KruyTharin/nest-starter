@@ -1,0 +1,35 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: nest_redis
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-secret}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD:-secret}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: nest_redis_insight
+    restart: unless-stopped
+    ports:
+      - '5540:5540'
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+    driver: local
