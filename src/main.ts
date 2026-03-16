@@ -17,7 +17,7 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix(`/api/${appVersion}`, {
-    exclude: ['health', 'health/(.*)'],
+    exclude: ['health', 'health/*path'],
   });
 
   const config = new DocumentBuilder()
@@ -50,4 +50,4 @@ async function bootstrap() {
   logger.log(`📚 Swagger UI: ${baseUrl}/docs`);
   logger.log(`📑 Scalar UI: ${baseUrl}/reference`);
 }
-bootstrap();
+void bootstrap();

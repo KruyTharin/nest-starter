@@ -6,19 +6,20 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Request } from 'express';
 
 import { Response } from '@/common/dtos/api-response.dto';
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<
   T,
-  Response<T>
+  Response<T> | T
 > {
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<Response<T>> {
-    const request = context.switchToHttp().getRequest();
+    next: CallHandler<T>,
+  ): Observable<Response<T> | T> {
+    const request = context.switchToHttp().getRequest<Request>();
 
     // Skip transformation for health checks and documentation
     if (
@@ -30,10 +31,12 @@ export class TransformInterceptor<T> implements NestInterceptor<
     }
 
     return next.handle().pipe(
-      map((data) => ({
-        data,
-        timestamp: new Date().toISOString(),
-      })),
+      map(
+        (data: T): Response<T> => ({
+          data,
+          timestamp: new Date().toISOString(),
+        }),
+      ),
     );
   }
 }
