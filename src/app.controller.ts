@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from '@/app.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ApiResponseDto } from '@/common/dtos/api-response.dto';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
 
 @ApiTags('app')
 @Controller()

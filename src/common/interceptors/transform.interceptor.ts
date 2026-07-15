@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Request } from 'express';
 
-import { Response } from '@/common/dtos/api-response.dto';
+import { Response } from '@/common/dto/api-response.dto';
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<

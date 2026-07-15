@@ -7,7 +7,7 @@ import {
 } from '@nestjs/terminus';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HealthResponseDto } from '@/common/dtos/api-response.dto';
+import { HealthResponseDto } from '@/common/dto/api-response.dto';
 
 @ApiTags('health')
 @Controller('health')

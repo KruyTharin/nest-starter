@@ -22,12 +22,13 @@ import { VideoModule } from './modules/video/video.module';
           password: process.env.REDIS_PASSWORD ?? 'secret',
         }),
       ),
-      getTracker: (req: { headers: Record<string, unknown>; ip: string }) => {
+      // Accept a loose request shape to satisfy ThrottlerGetTrackerFunction typing
+      getTracker: (req: Record<string, any>) => {
         // Rate limit per tenant if x-tenant-id header present, else fall back to IP
-        const tenantId = req.headers['x-tenant-id'];
+        const tenantId = req?.headers?.['x-tenant-id'];
         return typeof tenantId === 'string' && tenantId.length > 0
           ? tenantId
-          : req.ip;
+          : req?.ip;
       },
     }),
     BullModule.forRoot({
