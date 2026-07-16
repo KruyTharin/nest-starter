@@ -13,6 +13,7 @@ import { VideoModule } from './modules/video/video.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { configs } from './config';
+import { HttpClientModule } from './common/http/http.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { configs } from './config';
         attempts: 3,
       },
     }),
+    HttpClientModule,
     PrismaModule,
     HealthModule,
     VideoModule,
