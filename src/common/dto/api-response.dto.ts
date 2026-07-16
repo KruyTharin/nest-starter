@@ -12,7 +12,7 @@ export class ApiResponseDto<T> implements Response<T> {
   data!: T;
 
   @ApiProperty({ example: '2026-02-17T07:49:00.000Z' })
-  timestamp!: string;
+  timestamp: string;
 }
 
 export class HealthResponseDto {

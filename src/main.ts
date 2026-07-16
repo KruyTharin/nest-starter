@@ -3,14 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from '@/app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe())
   app.useGlobalInterceptors(new TransformInterceptor());
+  
   const port = process.env.APP_PORT ?? 5000;
   const appVersion = process.env.APP_VERSION ?? 'v1';
   const baseUrl = process.env.BASE_URL ?? `http://localhost:${port}`;

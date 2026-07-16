@@ -10,9 +10,15 @@ import { HealthModule } from '@/modules/health/health.module';
 import { THROTTLER_DEFAULT_CONFIG } from './common/constants/throttler.constant';
 import { BullModule } from '@nestjs/bullmq';
 import { VideoModule } from './modules/video/video.module';
+import { ConfigModule } from '@nestjs/config';
+import { configs } from './config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: configs,
+    }),
     ThrottlerModule.forRoot({
       throttlers: [THROTTLER_DEFAULT_CONFIG],
       storage: new ThrottlerStorageRedisService(
