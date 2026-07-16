@@ -10,6 +10,7 @@ import { HealthModule } from '@/modules/health/health.module';
 import { THROTTLER_DEFAULT_CONFIG } from './common/constants/throttler.constant';
 import { BullModule } from '@nestjs/bullmq';
 import { VideoModule } from './modules/video/video.module';
+import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { configs } from './config';
 
@@ -50,6 +51,7 @@ import { configs } from './config';
     PrismaModule,
     HealthModule,
     VideoModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
