@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse, ApiStandardErrorResponses } from '@/core/docs';
-import { PaginationQueryDto } from '@/shared/pagination';
+import { FindUsersQueryDto } from './dto/find-users-query.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserService } from './user.service';
@@ -14,8 +14,8 @@ export class UserController {
   @Get()
   @ApiPaginatedResponse(UserResponseDto)
   @ApiStandardErrorResponses(400)
-  findAll(@Query() paginationQuery: PaginationQueryDto) {
-    return this.userService.findAll(paginationQuery);
+  findAll(@Query() query: FindUsersQueryDto) {
+    return this.userService.findAll(query);
   }
 
   @Post()

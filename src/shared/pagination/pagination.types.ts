@@ -1,3 +1,18 @@
+export enum SortOrder {
+  Asc = 'asc',
+  Desc = 'desc',
+}
+
+export interface SortParams<TField extends string = string> {
+  sortBy: TField;
+  sortOrder: SortOrder;
+}
+
+export interface SortMeta {
+  by: string;
+  order: SortOrder;
+}
+
 export interface PaginationMeta {
   page: number;
   limit: number;
@@ -5,6 +20,7 @@ export interface PaginationMeta {
   totalPages: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  sort?: SortMeta;
 }
 
 export interface PaginatedResult<T> {
@@ -17,4 +33,9 @@ export interface PaginationParams {
   limit: number;
   skip: number;
   take: number;
+}
+
+export interface ListMetaOptions {
+  sort?: SortParams<string>;
+  filters?: Record<string, unknown>;
 }

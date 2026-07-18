@@ -1,6 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { PaginationMeta } from '@/shared/pagination';
+import { PaginationMeta, SortOrder } from '@/shared/pagination';
+
+class SortMetaDto {
+  @ApiProperty({ example: 'createdAt' })
+  by!: string;
+
+  @ApiProperty({ enum: SortOrder, example: SortOrder.Desc })
+  order!: SortOrder;
+}
 
 export class PaginationMetaDto implements PaginationMeta {
   @ApiProperty({ example: 1 })
@@ -20,4 +28,7 @@ export class PaginationMetaDto implements PaginationMeta {
 
   @ApiProperty({ example: false })
   hasPreviousPage!: boolean;
+
+  @ApiPropertyOptional({ type: SortMetaDto })
+  sort?: SortMetaDto;
 }
