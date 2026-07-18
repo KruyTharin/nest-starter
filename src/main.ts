@@ -1,55 +1,49 @@
 import 'dotenv/config';
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { apiReference } from '@scalar/nestjs-api-reference';
-import { AppModule } from '@/app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+
+import { AppModule } from '@/app.module';
+import {
+  HttpExceptionFilter,
+  setupApiDocumentation,
+  TransformInterceptor,
+} from '@/core';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe())
+  const configService = app.get(ConfigService);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
-  
-  const port = process.env.APP_PORT ?? 5000;
-  const appVersion = process.env.APP_VERSION ?? 'v1';
-  const baseUrl = process.env.BASE_URL ?? `http://localhost:${port}`;
+
+  const port = configService.get<number>('app.port', 3001);
+  const appVersion = configService.get<string>('app.version', 'v1');
+  const baseUrl =
+    configService.get<string>('app.baseUrl') ?? `http://localhost:${port}`;
 
   app.enableCors();
   app.setGlobalPrefix(`/api/${appVersion}`, {
     exclude: ['health', 'health/*path'],
   });
 
-  const config = new DocumentBuilder()
-    .setTitle(process.env.APP_NAME ?? 'NestJS Starter API')
-    .setDescription('The API description')
-    .setVersion(process.env.APP_VERSION ?? '1.0')
-    .addTag('nest')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  // Standard Swagger UI
-  SwaggerModule.setup('docs', app, document);
-
-  // Scalar API Reference
-  app.use(
-    '/reference',
-    apiReference({
-      spec: {
-        content: document,
-      },
-    }),
-  );
+  setupApiDocumentation(app, configService);
 
   await app.listen(port);
 
   logger.log(`Port running on: ${port}`);
-  logger.log(`🚀 Application is running on: ${baseUrl}/api/${appVersion}`);
-  logger.log(`🏥 Health Check: ${baseUrl}/health`);
-  logger.log(`📚 Swagger UI: ${baseUrl}/docs`);
-  logger.log(`📑 Scalar UI: ${baseUrl}/reference`);
+  logger.log(`Application is running on: ${baseUrl}/api/${appVersion}`);
+  logger.log(`Health Check: ${baseUrl}/health`);
+  logger.log(`Swagger UI: ${baseUrl}/docs`);
+  logger.log(`Scalar UI: ${baseUrl}/reference`);
 }
 void bootstrap();

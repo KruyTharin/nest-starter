@@ -1,19 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
-import { Redis } from 'ioredis';
-import { AppController } from '@/app.controller';
-import { AppService } from '@/app.service';
-import { PrismaModule } from '@/prisma/prisma.module';
-import { HealthModule } from '@/modules/health/health.module';
-import { THROTTLER_DEFAULT_CONFIG } from './common/constants/throttler.constant';
 import { BullModule } from '@nestjs/bullmq';
-import { VideoModule } from './modules/video/video.module';
-import { UserModule } from './modules/user/user.module';
-import { ConfigModule } from '@nestjs/config';
-import { configs } from './config';
-import { HttpClientModule } from './common/http/http.module';
+import { Redis } from 'ioredis';
+
+import { configs } from '@/config';
+import { HealthModule } from '@/modules/health/health.module';
+import { UserModule } from '@/modules/user/user.module';
+import { VideoModule } from '@/modules/video/video.module';
+import { InfrastructureModule } from '@/infrastructure/infrastructure.module';
+import { THROTTLER_DEFAULT_CONFIG } from '@/shared/constants';
 
 @Module({
   imports: [
@@ -21,43 +19,45 @@ import { HttpClientModule } from './common/http/http.module';
       isGlobal: true,
       load: configs,
     }),
-    ThrottlerModule.forRoot({
-      throttlers: [THROTTLER_DEFAULT_CONFIG],
-      storage: new ThrottlerStorageRedisService(
-        new Redis({
-          host: process.env.REDIS_HOST ?? 'localhost',
-          port: Number(process.env.REDIS_PORT) ?? 6379,
-          password: process.env.REDIS_PASSWORD ?? 'secret',
-        }),
-      ),
-      // Accept a loose request shape to satisfy ThrottlerGetTrackerFunction typing
-      getTracker: (req: Record<string, any>) => {
-        // Rate limit per tenant if x-tenant-id header present, else fall back to IP
-        const tenantId = req?.headers?.['x-tenant-id'];
-        return typeof tenantId === 'string' && tenantId.length > 0
-          ? tenantId
-          : req?.ip;
-      },
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [THROTTLER_DEFAULT_CONFIG],
+        storage: new ThrottlerStorageRedisService(
+          new Redis({
+            host: config.get<string>('redis.host'),
+            port: config.get<number>('redis.port'),
+            password: config.get<string>('redis.password'),
+          }),
+        ),
+        getTracker: (req: Record<string, unknown>) => {
+          const headers = req.headers as Record<string, string | undefined>;
+          const tenantId = headers?.['x-tenant-id'];
+          return typeof tenantId === 'string' && tenantId.length > 0
+            ? tenantId
+            : (req.ip as string);
+        },
+      }),
     }),
-    BullModule.forRoot({
-      connection: {
-        host: process.env.REDIS_HOST ?? 'localhost',
-        port: Number(process.env.REDIS_PORT) ?? 6379,
-        password: process.env.REDIS_PASSWORD ?? 'secret',
-      },
-      defaultJobOptions: {
-        attempts: 3,
-      },
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.get<string>('redis.host'),
+          port: config.get<number>('redis.port'),
+          password: config.get<string>('redis.password'),
+        },
+        defaultJobOptions: {
+          attempts: 3,
+        },
+      }),
     }),
-    HttpClientModule,
-    PrismaModule,
+    InfrastructureModule,
     HealthModule,
-    VideoModule,
     UserModule,
+    VideoModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

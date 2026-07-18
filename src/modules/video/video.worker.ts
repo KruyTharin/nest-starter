@@ -1,4 +1,4 @@
-import { VIDEO_QUEUE_NAME } from '@/common/constants/video.constant';
+import { VIDEO_QUEUE_NAME } from '@/shared/constants';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 

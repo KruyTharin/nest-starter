@@ -1,4 +1,4 @@
-import { VIDEO_QUEUE_NAME } from '@/common/constants/video.constant';
+import { VIDEO_QUEUE_NAME } from '@/shared/constants';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { VideoController } from './video.controller';

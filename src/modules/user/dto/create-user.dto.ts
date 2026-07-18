@@ -13,7 +13,7 @@ export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
   @MaxLength(320)
-  email: string;
+  email!: string;
 
   @ApiPropertyOptional({ example: 'Jane Doe', maxLength: 255 })
   @IsOptional()
@@ -26,5 +26,5 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(128)
-  password: string;
+  password!: string;
 }

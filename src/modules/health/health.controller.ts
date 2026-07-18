@@ -5,9 +5,9 @@ import {
   PrismaHealthIndicator,
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/database';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HealthResponseDto } from '@/common/dto/api-response.dto';
+import { HealthResponseDto } from '@/modules/health/dto/health-response.dto';
 
 @ApiTags('health')
 @Controller('health')
