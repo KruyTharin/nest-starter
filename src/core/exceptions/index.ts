@@ -8,4 +8,5 @@ export {
   createExternalHttpException,
   ExternalHttpException,
   type ExternalHttpErrorCode,
+  type ExternalHttpExceptionParams,
 } from './external-http.exception';

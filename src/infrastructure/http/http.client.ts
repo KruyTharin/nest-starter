@@ -148,15 +148,27 @@ function formatLog(config: TimedConfig | undefined, status: number | string) {
 
 function mapAxiosError(error: unknown, method: string, url: string) {
   if (!axios.isAxiosError(error)) {
-    return externalFail('NETWORK', method, url, 'External request failed');
+    return externalFail('NETWORK', method, url, 'External request failed', error);
   }
 
   if (error.code === 'ERR_CANCELED' || error.name === 'CanceledError') {
-    return externalFail('ABORTED', method, url, `External request aborted: ${method} ${url}`);
+    return externalFail(
+      'ABORTED',
+      method,
+      url,
+      `External request aborted: ${method} ${url}`,
+      error,
+    );
   }
 
   if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-    return externalFail('TIMEOUT', method, url, `External request timed out: ${method} ${url}`);
+    return externalFail(
+      'TIMEOUT',
+      method,
+      url,
+      `External request timed out: ${method} ${url}`,
+      error,
+    );
   }
 
   if (error.response) {
@@ -167,10 +179,17 @@ function mapAxiosError(error: unknown, method: string, url: string) {
       upstreamStatus: error.response.status,
       upstreamBody: error.response.data,
       message: `External request failed with status ${error.response.status}`,
+      cause: error,
     });
   }
 
-  return externalFail('NETWORK', method, url, `External request network error: ${method} ${url}`);
+  return externalFail(
+    'NETWORK',
+    method,
+    url,
+    `External request network error: ${method} ${url}`,
+    error,
+  );
 }
 
 function externalFail(
@@ -178,6 +197,7 @@ function externalFail(
   method: string,
   url: string,
   message: string,
+  cause?: unknown,
 ) {
-  return createExternalHttpException({ kind, method, url, message });
+  return createExternalHttpException({ kind, method, url, message, cause });
 }

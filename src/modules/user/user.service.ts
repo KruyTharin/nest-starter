@@ -69,7 +69,7 @@ export class UserService {
       .build();
 
     const response = await this.http.get<ExternalUserProfile>(
-      'https://jsonplaceholder.typicode.com/users/1',
+      'https://jsonplaceholder.typicode.com/users1',
       options,
     );
 

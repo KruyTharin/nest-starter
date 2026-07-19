@@ -7,6 +7,7 @@ export {
   isAppExceptionBody,
   type AppExceptionBody,
   type ExternalHttpErrorCode,
+  type ExternalHttpExceptionParams,
 } from './exceptions';
 export { AllExceptionsFilter } from './filters/all-exceptions.filter';
 export { TransformInterceptor } from './interceptors/transform.interceptor';
