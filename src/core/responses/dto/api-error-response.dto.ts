@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import { ErrorCode, type ErrorCode as ErrorCodeType } from '@/core/responses/error-codes';
 import { ErrorResponse } from '@/core/responses/response.types';
 
 export class ApiErrorResponseDto implements ErrorResponse {
@@ -8,6 +9,12 @@ export class ApiErrorResponseDto implements ErrorResponse {
 
   @ApiProperty({ example: 400 })
   statusCode!: number;
+
+  @ApiProperty({
+    example: ErrorCode.DB_UNIQUE_VIOLATION,
+    enum: Object.values(ErrorCode),
+  })
+  errorCode!: ErrorCodeType;
 
   @ApiProperty({
     oneOf: [

@@ -1,5 +1,6 @@
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 
+import { AppException, ErrorCode } from '@/core';
 import {
   HTTP_CLIENT,
   HttpClient,
@@ -43,27 +44,34 @@ export class UserService {
   async createUser(createUserDto: CreateUserDto) {
     const { password: _password, ...userData } = createUserDto;
 
-    const response = await this.prismaService.user.create({
-      data: userData,
-    });
+    try {
+      
+      const response = await this.prismaService.user.create({
+        data: userData,
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new AppException(HttpStatus.CONFLICT, {
+        message: 'Email already exists',
+        error: 'Conflict',
+        errorCode: ErrorCode.DB_ERROR,
+      }, {
+        cause: error,
+      });
+    }
   }
 
   async fetchExternalProfile() {
     const options = new HttpOptionsBuilder()
       .bearerToken('2323')
-      .header('Accept', 'text/html')
+      .header('Accept', 'application/json')
       .build();
-    const url = 'https://jsonplaceholder.typicode.com/users';
 
-    const response = await this.http.get<ExternalUserProfile>(url, options);
-
-    if (response.status >= 400) {
-      throw new BadGatewayException(
-        `External profile request failed with status ${response.status}`,
-      );
-    }
+    const response = await this.http.get<ExternalUserProfile>(
+      'https://jsonplaceholder.typicode.com/users/1',
+      options,
+    );
 
     return response.data;
   }

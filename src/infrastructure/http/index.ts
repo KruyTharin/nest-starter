@@ -1,4 +1,12 @@
 export { HttpClientModule } from './http.module';
-export { HTTP_CLIENT } from './http.tokens';
-export type { HttpClient, HttpRequest, HttpResponse } from './http.types';
-export { HttpOptionsBuilder } from './builders/http-options.builder';
+export { HttpOptionsBuilder } from './http-options.builder';
+export {
+  HTTP_CLIENT,
+  type HttpClient,
+  type HttpHeaders,
+  type HttpMethod,
+  type HttpQuery,
+  type HttpRequest,
+  type HttpRequestOptions,
+  type HttpResponse,
+} from './http.types';

@@ -1,3 +1,5 @@
+export const HTTP_CLIENT = Symbol('HTTP_CLIENT');
+
 export type HttpMethod =
   | 'GET'
   | 'POST'
@@ -8,58 +10,53 @@ export type HttpMethod =
   | 'OPTIONS';
 
 export type HttpHeaders = Record<string, string>;
+export type HttpQuery = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
 
-export interface HttpRequest<TBody = unknown> {
-  method: HttpMethod;
-  url: string;
+export interface HttpRequestOptions {
   headers?: HttpHeaders;
-  query?: Record<string, string | number | boolean | null | undefined>;
-  body?: TBody;
+  query?: HttpQuery;
   timeoutMs?: number;
+  signal?: AbortSignal;
 }
 
-export type HttpRequestOptions<TBody = unknown> = Omit<
-  HttpRequest<TBody>,
-  'method' | 'url' | 'body'
->;
+export interface HttpRequest<TBody = unknown> extends HttpRequestOptions {
+  method: HttpMethod;
+  url: string;
+  body?: TBody;
+}
 
 export interface HttpResponse<T = unknown> {
   status: number;
-  headers: Record<string, string | string[] | undefined>;
+  headers: HttpHeaders;
   data: T;
 }
 
 export interface HttpClient {
-  request<TResponse = unknown, TBody = unknown>(
-    req: HttpRequest<TBody>,
-  ): Promise<HttpResponse<TResponse>>;
-
-  get<TResponse = unknown>(
+  request<T = unknown>(req: HttpRequest): Promise<HttpResponse<T>>;
+  get<T = unknown>(
     url: string,
     options?: HttpRequestOptions,
-  ): Promise<HttpResponse<TResponse>>;
-
-  post<TResponse = unknown, TBody = unknown>(
+  ): Promise<HttpResponse<T>>;
+  post<T = unknown>(
     url: string,
-    body: TBody,
-    options?: HttpRequestOptions<TBody>,
-  ): Promise<HttpResponse<TResponse>>;
-
-  put<TResponse = unknown, TBody = unknown>(
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>>;
+  put<T = unknown>(
     url: string,
-    body: TBody,
-    options?: HttpRequestOptions<TBody>,
-  ): Promise<HttpResponse<TResponse>>;
-
-  patch<TResponse = unknown, TBody = unknown>(
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>>;
+  patch<T = unknown>(
     url: string,
-    body: TBody,
-    options?: HttpRequestOptions<TBody>,
-  ): Promise<HttpResponse<TResponse>>;
-
-  delete<TResponse = unknown>(
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>>;
+  delete<T = unknown>(
     url: string,
     options?: HttpRequestOptions,
-  ): Promise<HttpResponse<TResponse>>;
+  ): Promise<HttpResponse<T>>;
 }
-

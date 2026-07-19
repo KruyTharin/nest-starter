@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from '@/app.module';
 import {
-  HttpExceptionFilter,
+  AllExceptionsFilter,
   setupApiDocumentation,
   TransformInterceptor,
 } from '@/core';
@@ -23,7 +23,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
   const port = configService.get<number>('app.port', 3001);
